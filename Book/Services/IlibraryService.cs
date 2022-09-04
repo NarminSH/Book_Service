@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 
 
-public interface IlibraryService
-{
-    public void FindAllBooksByName(string name);
-    public void RemoveAllBooksByName(string value);
-    public void SearchBooks(string value);
-    public void FindAllBooksByPageCountRange(int min, int max);
-    public void SearchBooksByPageCountRange(int min, int max, int pageCount);
 
+public interface IlibraryRepository<Kitab> 
+{
+    void AddBook(Kitab book);
+    Kitab GetBook(Func<Kitab, bool> expression);
+    List<Kitab>  FindAllBooks(Func<Kitab, bool> expression);
+    int RemoveAllBooks(Predicate<Kitab> expression);
 }
 
 

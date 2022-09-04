@@ -1,57 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using static System.Reflection.Metadata.BlobBuilder;
 
 
-public class LibraryService : IlibraryService
+public class LibraryRepository : IlibraryRepository<Kitab>
 {
-    public void FindAllBooksByName(string value)
+    List<Kitab> books = new List<Kitab>();
+
+
+    public void AddBook(Kitab book)
     {
-        List<Kitab> result = books.FindAll(x => x.Name.ToUpper() == value.ToUpper());
-        foreach (var book in result)
+        books.Add(book);
+        Console.WriteLine("Added the book successfuly!");
+    }
+
+
+    public List<Kitab> FindAllBooks(Func<Kitab, bool> expression)
+    {
+        if (expression == null)
         {
-            Console.WriteLine($"matched books : {book.Name}");
+            return books.ToList();
         }
-
-    }
-    public void RemoveAllBooksByName(string value)
-    {
-        Console.WriteLine("before all removing books by code, books count " + books.Count());
-
-        books.RemoveAll(x => x.Name.ToUpper().Contains(value.ToUpper()));
-        Console.WriteLine("before all removing books by code, books count " + books.Count());
+        return books.Where(expression).ToList();
     }
 
-    public void SearchBooks(string value)
-    {
-        int.TryParse(value, out int number);
-        if (books.Exists(x => x.Name == value || x.AuthorName == value || x.PageCount == number))
-        {
-            List<Kitab> allbooks = books.FindAll(x => x.Name == value || x.AuthorName == value || x.PageCount == number);
-            foreach (var book in allbooks)
-            {
-                Console.WriteLine($"Search book result: {book.Name}");
-            }
-        }
 
+
+    public Kitab GetBook(Func<Kitab, bool> expression)
+    {
+        return books.FirstOrDefault(expression);
     }
 
-    public void FindAllBooksByPageCountRange(int min, int max)
+    public int RemoveAllBooks(Predicate<Kitab> expression)
     {
-        List<Kitab> result = books.FindAll(x => min < x.PageCount && x.PageCount < max);
-        Console.WriteLine("all books" + result);
-    }
-    public void RemoveBookByCode(string code)
-    {
-        Console.WriteLine("before removing books by code, books count " + books.Count());
-        if (books.Exists(x => x.Code == code))
-        {
-            Kitab book = books.Find(x => x.Code == code);
-            books.Remove(book);
-            Console.WriteLine("after removing books by code, books count " + books.Count());
-        }
-
+        return books.RemoveAll(expression);
     }
 }
 
